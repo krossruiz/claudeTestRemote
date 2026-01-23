@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World Blog</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            font-weight: 300;
+            line-height: 1.7;
+            color: #a0a0a0;
+            background-color: #0a0a0a;
+            min-height: 100vh;
+        }
+
+        header {
+            background: transparent;
+            color: #e0e0e0;
+            padding: 3rem 2rem;
+            text-align: left;
+            max-width: 800px;
+            margin: 0 auto;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        header h1 {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+            color: #ffffff;
+        }
+
+        header p {
+            font-size: 0.85rem;
+            color: #505050;
+            letter-spacing: 0.05em;
+            text-transform: lowercase;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 2rem 4rem;
+        }
+
+        .post-list-item {
+            background: transparent;
+            padding: 1.5rem 0;
+            margin-bottom: 0;
+        }
+
+        .post-list-item h2 {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #e0e0e0;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: color 0.2s ease, text-shadow 0.2s ease;
+        }
+
+        .post-list-item h2:hover {
+            color: #ff2a6d;
+            text-shadow: 0 0 20px rgba(255, 42, 109, 0.3);
+        }
+
+        .post-list-item .meta {
+            font-family: 'Space Mono', monospace;
+            color: #404040;
+            font-size: 0.75rem;
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .post-list-item .excerpt {
+            color: #606060;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        article {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        article.active {
+            display: block;
+        }
+
+        article h2 {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .meta {
+            font-family: 'Space Mono', monospace;
+            color: #404040;
+            font-size: 0.75rem;
+            margin-bottom: 2rem;
+            letter-spacing: 0.05em;
+        }
+
+        article p {
+            margin-bottom: 1.5rem;
+            color: #909090;
+        }
+
+        .back-link {
+            display: inline-block;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: #505050;
+            text-decoration: none;
+            margin-bottom: 2rem;
+            cursor: pointer;
+            letter-spacing: 0.03em;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #ff2a6d;
+        }
+
+        #post-list {
+            display: block;
+        }
+
+        #post-list.hidden {
+            display: none;
+        }
+
+        footer {
+            text-align: left;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            border-top: 1px solid #1a1a1a;
+            color: #303030;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+        }
+
+        ::selection {
+            background: #ff2a6d;
+            color: #0a0a0a;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Hello World Blog</h1>
+        <p>A simple blog to share my thoughts</p>
+    </header>
+
+    <main>
+        <div id="post-list">
+            <div class="post-list-item" onclick="showPost('on-tension')">
+                <h2>On Tension</h2>
+                <p class="meta">Posted on January 23, 2026</p>
+                <p class="excerpt">I was talking to someone today who told me that when they crochet, the control of the tension of the yarn is key to creating smoothness. She said think of when you tie a knot...</p>
+            </div>
+        </div>
+
+        <article id="on-tension">
+            <span class="back-link" onclick="showList()">&larr; Back to posts</span>
+            <h2>On Tension</h2>
+            <p class="meta">Posted on January 23, 2026</p>
+            <p>
+                I was talking to someone today who told me that when they crochet, the control of the tension of the yarn is key to creating smoothness. She said think of when you tie a knot. If you pull softly, the knot will be big and loose. If you pull tightly, they'll be small and hard. If you're consistent with the tension in your piece, it makes for a smooth result.
+            </p>
+            <p>
+                I began to pattern match and was thinking about how I express myself like the tension in knots. Sometimes I'm too soft, not saying what I want to say, avoidant to explore an idea because I don't want to handle the consequences of disagreement or offense, and sometimes I'm too tight, I'll come with intensity and directness and I'll drill.
+            </p>
+            <p>
+                I think of this account as a collection of zines, mixtapes, and as a private network journal. There's many aspects to what I've cultivated. I think about curation, composition, coherence, my tensions, because I think about communicating effectively. It's like what my Speech 101 teacher would tell my class, it's not just what you say that's vital for effective communication, but who your audience is and if they're listening.
+            </p>
+            <p>
+                I think of people here that I can only remember a few moments together with, but that I think of frequently. Some of it is alongside a parasocial persistence, with varying degrees of new information coming in. There's some messages dripping… slowly… over… years… based on scarce information that I believe is connected to something that was, I imagine who is watching. How far my imagination wandered away from the descendants of these people? I have no Earthly idea. I tell myself there's reason involved when I'm trying to match reality, but there are echoes, distortions, filters of memory and found transmissions all over.
+            </p>
+            <p>
+                I had an Art History teacher who shared a perspective of artists that's stuck with me. My notes have this next to some information on Rousseau and The Enlightenment (don't ask me, I don't know about these things), but I'm not sure where it comes from exactly. It's that the further back you recall, the simpler the representations become, and the more profound they are.
+            </p>
+            <p>
+                I heard recently, "you grieve so long".
+            </p>
+        </article>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Hello World Blog. Made with simplicity in mind.</p>
+    </footer>
+
+    <script>
+        function showPost(postId) {
+            document.getElementById('post-list').classList.add('hidden');
+            document.querySelectorAll('article').forEach(a => a.classList.remove('active'));
+            const post = document.getElementById(postId);
+            if (post) {
+                post.classList.add('active');
+                history.pushState(null, '', '#' + postId);
+            }
+        }
+
+        function showList() {
+            document.getElementById('post-list').classList.remove('hidden');
+            document.querySelectorAll('article').forEach(a => a.classList.remove('active'));
+            history.pushState(null, '', window.location.pathname);
+        }
+
+        function handleHash() {
+            const hash = window.location.hash.slice(1);
+            if (hash && document.getElementById(hash)) {
+                document.getElementById('post-list').classList.add('hidden');
+                document.querySelectorAll('article').forEach(a => a.classList.remove('active'));
+                document.getElementById(hash).classList.add('active');
+            } else {
+                document.getElementById('post-list').classList.remove('hidden');
+                document.querySelectorAll('article').forEach(a => a.classList.remove('active'));
+            }
+        }
+
+        window.addEventListener('hashchange', handleHash);
+        window.addEventListener('load', handleHash);
+    </script>
+</body>
+</html>
