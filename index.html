@@ -123,12 +123,10 @@
         }
 
         .back-link {
-            display: inline-block;
             font-family: 'Space Mono', monospace;
             font-size: 0.8rem;
             color: #505050;
             text-decoration: none;
-            margin-bottom: 2rem;
             cursor: pointer;
             letter-spacing: 0.03em;
             transition: color 0.2s ease;
@@ -162,6 +160,68 @@
             background: #ff2a6d;
             color: #0a0a0a;
         }
+
+        .tts-btn {
+            display: inline-block;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: #505050;
+            background: transparent;
+            border: 1px solid #252525;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            letter-spacing: 0.05em;
+            transition: color 0.2s ease, border-color 0.2s ease;
+            margin-bottom: 2rem;
+        }
+
+        .tts-btn:hover {
+            color: #ff2a6d;
+            border-color: #ff2a6d;
+        }
+
+        .tts-btn.playing {
+            color: #ff2a6d;
+            border-color: #ff2a6d;
+        }
+
+        .tts-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .voice-toggle {
+            display: flex;
+            border: 1px solid #252525;
+        }
+
+        .voice-toggle button {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            color: #404040;
+            background: transparent;
+            border: none;
+            padding: 0.4rem 0.75rem;
+            cursor: pointer;
+            letter-spacing: 0.03em;
+            transition: color 0.2s ease, background 0.2s ease;
+        }
+
+        .voice-toggle button:first-child {
+            border-right: 1px solid #252525;
+        }
+
+        .voice-toggle button:hover {
+            color: #707070;
+        }
+
+        .voice-toggle button.active {
+            color: #ff2a6d;
+            background: rgba(255, 42, 109, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -180,7 +240,14 @@
         </div>
 
         <article id="on-tension">
-            <span class="back-link" onclick="showList()">&larr; Back to posts</span>
+            <div class="tts-controls">
+                <span class="back-link" onclick="showList()">&larr; Back to posts</span>
+                <button class="tts-btn" onclick="toggleTTS('on-tension')">Listen</button>
+                <div class="voice-toggle">
+                    <button class="active" onclick="setVoiceMode('synthetic')">Synthetic</button>
+                    <button onclick="setVoiceMode('natural')">Natural</button>
+                </div>
+            </div>
             <h2>On Tension</h2>
             <p class="meta">Posted on January 23, 2026</p>
             <p>
@@ -209,7 +276,107 @@
     </footer>
 
     <script>
+        let currentUtterance = null;
+        let isSpeaking = false;
+        let isPaused = false;
+        let voiceMode = 'synthetic';
+
+        const maleIndicators = ['male', 'david', 'james', 'daniel', 'george', 'guy', 'aaron', 'fred', 'mark', 'paul', 'tom', 'alex'];
+        const femaleIndicators = ['female', 'woman', 'girl', 'samantha', 'victoria', 'karen', 'moira', 'fiona', 'zira', 'susan', 'linda', 'emma'];
+        const naturalIndicators = ['natural', 'neural', 'premium', 'enhanced', 'wavenet', 'online'];
+        const syntheticIndicators = ['desktop', 'compact', 'microsoft david', 'microsoft mark'];
+
+        function getSyntheticMaleVoice() {
+            const voices = speechSynthesis.getVoices();
+
+            // Prefer explicitly synthetic/older voices
+            let voice = voices.find(v => {
+                const name = v.name.toLowerCase();
+                return syntheticIndicators.some(s => name.includes(s)) &&
+                       !femaleIndicators.some(f => name.includes(f));
+            });
+
+            // Fall back to any male voice that's NOT natural/neural
+            if (!voice) {
+                voice = voices.find(v => {
+                    const name = v.name.toLowerCase();
+                    return maleIndicators.some(m => name.includes(m)) &&
+                           !naturalIndicators.some(n => name.includes(n));
+                });
+            }
+
+            // Fall back to any English non-female, non-natural voice
+            if (!voice) {
+                voice = voices.find(v => {
+                    const name = v.name.toLowerCase();
+                    return v.lang.startsWith('en') &&
+                           !femaleIndicators.some(f => name.includes(f)) &&
+                           !naturalIndicators.some(n => name.includes(n));
+                });
+            }
+
+            return voice || voices[0];
+        }
+
+        function getNaturalMaleVoice() {
+            const voices = speechSynthesis.getVoices();
+
+            // Prefer explicitly natural/neural male voices
+            let voice = voices.find(v => {
+                const name = v.name.toLowerCase();
+                return naturalIndicators.some(n => name.includes(n)) &&
+                       maleIndicators.some(m => name.includes(m));
+            });
+
+            // Fall back to any natural/neural English voice that's not female
+            if (!voice) {
+                voice = voices.find(v => {
+                    const name = v.name.toLowerCase();
+                    return naturalIndicators.some(n => name.includes(n)) &&
+                           v.lang.startsWith('en') &&
+                           !femaleIndicators.some(f => name.includes(f));
+                });
+            }
+
+            // Fall back to any male voice (prefer natural-sounding ones)
+            if (!voice) {
+                voice = voices.find(v => {
+                    const name = v.name.toLowerCase();
+                    return maleIndicators.some(m => name.includes(m));
+                });
+            }
+
+            // Fall back to any English non-female voice
+            if (!voice) {
+                voice = voices.find(v => {
+                    const name = v.name.toLowerCase();
+                    return v.lang.startsWith('en') &&
+                           !femaleIndicators.some(f => name.includes(f));
+                });
+            }
+
+            return voice || voices[0];
+        }
+
+        function setVoiceMode(mode) {
+            voiceMode = mode;
+            document.querySelectorAll('.voice-toggle button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // If currently speaking, restart with new voice
+            if (isSpeaking || isPaused) {
+                const activeArticle = document.querySelector('article.active');
+                if (activeArticle) {
+                    stopTTS();
+                    toggleTTS(activeArticle.id);
+                }
+            }
+        }
+
         function showPost(postId) {
+            stopTTS();
             document.getElementById('post-list').classList.add('hidden');
             document.querySelectorAll('article').forEach(a => a.classList.remove('active'));
             const post = document.getElementById(postId);
@@ -220,12 +387,14 @@
         }
 
         function showList() {
+            stopTTS();
             document.getElementById('post-list').classList.remove('hidden');
             document.querySelectorAll('article').forEach(a => a.classList.remove('active'));
             history.pushState(null, '', window.location.pathname);
         }
 
         function handleHash() {
+            stopTTS();
             const hash = window.location.hash.slice(1);
             if (hash && document.getElementById(hash)) {
                 document.getElementById('post-list').classList.add('hidden');
@@ -237,8 +406,90 @@
             }
         }
 
+        function getPostText(postId) {
+            const article = document.getElementById(postId);
+            if (!article) return '';
+            const paragraphs = article.querySelectorAll('p:not(.meta)');
+            return Array.from(paragraphs).map(p => p.textContent.trim()).join(' ');
+        }
+
+        function toggleTTS(postId) {
+            const btn = document.querySelector(`#${postId} .tts-btn`);
+
+            if (isSpeaking && !isPaused) {
+                speechSynthesis.pause();
+                isPaused = true;
+                btn.textContent = 'Resume';
+                btn.classList.remove('playing');
+                return;
+            }
+
+            if (isPaused) {
+                speechSynthesis.resume();
+                isPaused = false;
+                btn.textContent = 'Pause';
+                btn.classList.add('playing');
+                return;
+            }
+
+            const text = getPostText(postId);
+            if (!text) return;
+
+            currentUtterance = new SpeechSynthesisUtterance(text);
+
+            if (voiceMode === 'synthetic') {
+                currentUtterance.voice = getSyntheticMaleVoice();
+                currentUtterance.rate = 0.85;
+                currentUtterance.pitch = 0.8;
+            } else {
+                currentUtterance.voice = getNaturalMaleVoice();
+                currentUtterance.rate = 0.95;
+                currentUtterance.pitch = 1;
+            }
+
+            currentUtterance.onstart = () => {
+                isSpeaking = true;
+                isPaused = false;
+                btn.textContent = 'Pause';
+                btn.classList.add('playing');
+            };
+
+            currentUtterance.onend = () => {
+                resetTTSState(btn);
+            };
+
+            currentUtterance.onerror = () => {
+                resetTTSState(btn);
+            };
+
+            speechSynthesis.speak(currentUtterance);
+        }
+
+        function stopTTS() {
+            if (speechSynthesis.speaking || speechSynthesis.pending) {
+                speechSynthesis.cancel();
+            }
+            document.querySelectorAll('.tts-btn').forEach(btn => {
+                resetTTSState(btn);
+            });
+        }
+
+        function resetTTSState(btn) {
+            isSpeaking = false;
+            isPaused = false;
+            currentUtterance = null;
+            if (btn) {
+                btn.textContent = 'Listen';
+                btn.classList.remove('playing');
+            }
+        }
+
         window.addEventListener('hashchange', handleHash);
         window.addEventListener('load', handleHash);
+
+        // Preload voices (some browsers load them asynchronously)
+        speechSynthesis.getVoices();
+        speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
     </script>
 </body>
 </html>
